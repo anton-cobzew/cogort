@@ -1,0 +1,46 @@
+body {
+  background: url(../img/background/2rhXfCBxFaQ.jpg)
+              no-repeat center top fixed;
+  background-size: cover;
+}
+
+.friends_list {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 27vh;
+  width: 800px;
+  list-style: none;
+  text-align: center;
+  padding: 30px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.friends_list__item {
+  display: inline-block;
+  width: 50%;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.friends_list__item__image {
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  margin: 10px;
+}
+
+.friends_list__item__name {
+  font-size: 30px;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0px 1px 4px 4px #000;
+}
+
+.friends_list__item__info {
+  margin: 0;
+  font-size: 16px;
+  color: #a9a9a9;
+  text-shadow: 0px 1px 2px 2px #000;
+}
