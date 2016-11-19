@@ -7,12 +7,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<?php include('template/html_default_head.php'); ?>
-	<title>Войдите в систему | Cogort</title>
+	<?php include('include/html_default_head.php'); ?>
+	<title>Вход в систему | Cogort</title>
 	<link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-	<span class="octicon octicon-clippy"></span>
 	<div class="container">
 		<form action="#" method="post">
 			<input type="text" name="nickname">
@@ -27,7 +26,7 @@
 
 			$sql = "SELECT *
 					FROM users
-					WHERE nickname = '" . $_POST['nickname'] . "' AND password = '" . $_POST['password'] . "'";
+					WHERE nickname = '{$_POST['nickname']}' AND password = '{$_POST['password']}'";
 			$result = send_sql($conn, $sql);
 			if (mysqli_num_rows($result) > 0) {
 				// User authorized
@@ -42,7 +41,7 @@
 				// Change user status (user is online now)
 				send_sql($conn, "UPDATE users
 								SET status = 'на связи'
-								WHERE id = " . $user['id']);
+								WHERE id = {$user['id']}");
 
 				header('Location: friends.php');
 			}
