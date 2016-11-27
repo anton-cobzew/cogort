@@ -14,6 +14,7 @@
 	<link rel="stylesheet" href="css/messages.css">
 </head>
 <body>
+
 	<?php
 		require('include/head_menu.php');
 	?>
@@ -37,23 +38,30 @@
 		else
 			$messages_table = "messages_u{$friend['id']}_u{$_SESSION['id']}";
 		// Check if messages table exists
-		if (mysqli_num_rows(send_sql("SHOW TABLES LIKE '$messages_table'")) == 0)
+		if (mysqli_num_rows(send_sql($conn, "SHOW TABLES LIKE '$messages_table'")) == 0)
 			// Messages table does not exist. Create it
-			send_sql("CREATE TABLE $messages_table
-							(id_from INT NOT NULL,
+			send_sql($conn, "CREATE TABLE $messages_table
+							(id INT NOT NULL AUTO_INCREMENT,
+							id_from INT NOT NULL,
 							id_to INT NOT NULL,
 							text VARCHAR(100000) NOT NULL,
-							datetime DATETIME NOT NULL,
-							status VARCHAR(20) NOT NULL)");
+							datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+							status VARCHAR(20) NOT NULL,
+							PRIMARY KEY (id))");
 
 		/*
 			Get messages
 		*/
-    $messages = mysqli_fetch_assoc(send_sql($conn,
+    $messages = send_sql($conn,
             "SELECT *
             FROM $messages_table
-            ORDER BY datetime"));
+            ORDER BY datetime");
     while ($message = mysqli_fetch_assoc($messages)) {
+			// Change message status to 'read'
+			send_sql($conn,
+						"UPDATE $messages_table
+						SET status = 'read'
+						WHERE id = {$message['id']}");
 			$message_from = '';
 			if ($message['id_from'] == $_SESSION['id']) {
 				// This is message FROM me
@@ -66,7 +74,11 @@
       echo "<div class='message'>
               <div class='message__info'>
                 <span class='message__from'>$message_from</span>
-								<span class='message__datetime'>{$message['datetime']}</span>
+								<span class='message__datetime'></span>
+								<script>
+									// Convert datetime to local time zone
+									$('.message__datetime').last().text(formatMessageDateTime('{$message['datetime']}'));
+								</script>
 								<p class='message__text'>{$message['text']}</p>
               </div>
             </div>";
@@ -78,15 +90,9 @@
 		*/
 		if (!empty($_POST['message-text'])) {
 			send_sql($conn,
-							"INSERT INTO $messages_table (id_from, id_to, text, datetime, status)
-							VALUES ({$_SESSION['id']}, {$friend['id']}, {$_POST['message-text']}, 'unread')");
-			echo "<div class='message'>
-              <div class='message__info'>
-                <span class='message__from'>{$_SESSION['id']}</span>
-								<span class='message__datetime'>" . date('d.m.y H:i') . "</span>
-								<p class='message__text'>{$message['text']}</p>
-              </div>
-            </div>";
+							"INSERT INTO $messages_table (id_from, id_to, text, status)
+							VALUES ({$_SESSION['id']}, {$friend['id']}, '{$_POST['message-text']}', 'unread')");
+			header("Refresh:0");
 		}
   ?>
 
